@@ -20,7 +20,7 @@ mixer.init()
 _sound_library = {}
 
 
-def play_sound(sound_name, volume):
+def play_sound(sound_name, volume, loops=-1):
     global _sound_library
     sound = _sound_library.get(sound_name)
     if sound is None:
@@ -29,7 +29,7 @@ def play_sound(sound_name, volume):
         _sound_library[sound_name] = sound
 
     sound.set_volume(volume)
-    sound.play()
+    sound.play(loops=loops)
 
 
 def get_sound_path(sound_name):
@@ -46,8 +46,8 @@ class Player:
 
     def moved(self):
         print_position(self.x, self.y)
-        for sound_name, sound in _sound_library.items():
-            sound.stop()
+        ## TODO play steps here
+        # play_sound("water.mp3", volume=1, loops=1)
         for o in objects:
             o.check_close(self.x, self.y)
 
@@ -62,19 +62,15 @@ class Player:
             self.moved()
 
     def move_left(self):
-        print('mvl')
         self.set_x(self.x - 1)
 
     def move_right(self):
-        print('mvr')
         self.set_x(self.x + 1)
 
     def move_up(self):
-        print('mvu')
         self.set_y(self.y + 1)
 
     def move_down(self):
-        print('mvd')
         self.set_y(self.y - 1)
 
 
@@ -93,6 +89,10 @@ class Object:
             volume = round(1 - distance / self.radius, 2)
             print(f'{self.name}: {volume * 100}% volume')
             play_sound(self.sound_name, volume)
+        else:
+            sound = _sound_library.get(self.sound_name)
+            if sound is not None:
+                play_sound(self.sound_name, 0)
 
 
 def calculate_distance(x1, y1, x2, y2):
